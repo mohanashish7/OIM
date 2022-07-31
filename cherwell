@@ -1,0 +1,60 @@
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import javax.security.cert.X509Certificate;
+
+public class IDaaSAddProduct {
+	public static void main(String[] args) throws KeyManagementException, NoSuchAlgorithmException {
+		IDaaSAddProduct ob = new IDaaSAddProduct();
+		ob.getCherwellToken();
+	}
+
+	
+	public void getCherwellToken()  {
+		try {
+			System.out.println("Inside getCherwellToken");
+			URL url = new URL("");
+			URLConnection con = url.openConnection();
+			HttpURLConnection http = (HttpURLConnection) con;
+			http.setRequestMethod("POST"); // PUT is another valid option
+			http.setDoOutput(true);
+			byte[] out = "grant_type=password&client_id=0bd67bfa-ee6f-4ece-83ef-bea7b2dc6252&username=&password=&auth_mode=Internal"
+					.getBytes(StandardCharsets.UTF_8);
+			int length = out.length;
+
+			http.setFixedLengthStreamingMode(length);
+			http.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			http.connect();
+
+			try (OutputStream os = http.getOutputStream()) {
+				os.write(out);
+			}
+			BufferedReader br = null;
+			br = new BufferedReader(new InputStreamReader(http.getInputStream()));
+			String line = null;
+			StringBuilder sb = new StringBuilder();
+			while ((line = br.readLine()) != null) {
+				sb.append(line);
+				System.out.println("S----" + line);
+			}
+
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		// return null;
+	}
+
+}
